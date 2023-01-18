@@ -1,0 +1,9 @@
+.container {
+  @apply w-screen h-screen;
+  @apply flex justify-center items-center;
+}
+
+.content {
+  @apply w-full max-w-5xl px-6;
+  @apply flex flex-col gap-16;
+}
