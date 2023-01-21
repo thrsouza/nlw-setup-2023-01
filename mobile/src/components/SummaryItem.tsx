@@ -15,18 +15,18 @@ export const DAY_MARGIN_BETWEEN = 8;
 export const DAY_SIZE =
   Dimensions.get("screen").width / WEEK_DAYS - (SCREEN_HORIZONTAL_PADDING + 5);
 
-interface HabitDayProps extends TouchableOpacityProps {
+interface SummaryItemProps extends TouchableOpacityProps {
   date: Date;
   amountOfHabits: number;
   amountCompleted: number;
 }
 
-export function HabitDay({
+export function SummaryItem({
   date,
   amountOfHabits,
   amountCompleted,
   ...props
-}: HabitDayProps) {
+}: SummaryItemProps) {
   const completedPercentage = generateProgressPercentage(
     amountOfHabits,
     amountCompleted

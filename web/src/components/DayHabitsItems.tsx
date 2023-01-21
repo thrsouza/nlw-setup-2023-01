@@ -4,7 +4,7 @@ import { Check } from "phosphor-react";
 import { useEffect, useState } from "react";
 import { api } from "../lib/axios";
 
-interface Habit {
+interface DayHabits {
   possibleHabits: {
     id: string;
     title: string;
@@ -22,13 +22,13 @@ export function DayHabitsItems({
   date,
   onCompletedChanged,
 }: DayHabitsItemsProps) {
-  const [habits, setHabits] = useState<Habit>();
+  const [dayHabits, setDayHabits] = useState<DayHabits>();
 
   useEffect(() => {
     api
       .get("/day", { params: { date: date.toISOString() } })
       .then((response) => {
-        setHabits(response.data as Habit);
+        setDayHabits(response.data as DayHabits);
       });
   }, []);
 
@@ -36,25 +36,27 @@ export function DayHabitsItems({
 
   return (
     <div className="mt-6 flex flex-col gap-3">
-      {habits?.possibleHabits.map((habit) => (
+      {dayHabits?.possibleHabits.map((dayHabit) => (
         <Checkbox.Root
-          key={habit.id}
+          key={dayHabit.id}
           className="flex items-center gap-3 group focus:outline-none disabled:cursor-not-allowed"
-          checked={habits.completedHabits.includes(habit.id)}
+          checked={dayHabits.completedHabits.includes(dayHabit.id)}
           disabled={isDateInPast}
           onCheckedChange={() => {
-            api.patch(`/habits/${habit.id}/toggle`).then(() => {
+            api.patch(`/habits/${dayHabit.id}/toggle`).then(() => {
               let completedHabits: string[] = [];
 
-              if (habits.completedHabits.includes(habit.id)) {
+              if (dayHabits.completedHabits.includes(dayHabit.id)) {
                 completedHabits = [
-                  ...habits.completedHabits.filter((id) => id !== habit.id),
+                  ...dayHabits.completedHabits.filter(
+                    (id) => id !== dayHabit.id
+                  ),
                 ];
               } else {
-                completedHabits = [...habits.completedHabits, habit.id];
+                completedHabits = [...dayHabits.completedHabits, dayHabit.id];
               }
 
-              setHabits({ ...habits, completedHabits });
+              setDayHabits({ ...dayHabits, completedHabits });
 
               onCompletedChanged(completedHabits.length);
             });
@@ -66,7 +68,7 @@ export function DayHabitsItems({
             </Checkbox.Indicator>
           </div>
           <span className="font-semibold text-xl text-white leading-tight group-data-[state=checked]:line-through group-data-[state=checked]:text-zinc-400">
-            {habit.title}
+            {dayHabit.title}
           </span>
         </Checkbox.Root>
       ))}

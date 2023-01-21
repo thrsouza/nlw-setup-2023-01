@@ -1,12 +1,12 @@
 import { View, Text, ScrollView, Alert } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import { useEffect, useState } from "react";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
+import { useCallback, useState } from "react";
 import dayjs from "dayjs";
 
 import { api } from "../lib/axios";
 import { generateDatesFromYearStart } from "../utils/generate-dates-from-year-start";
 
-import { DAY_SIZE, HabitDay } from "../components/HabitDay";
+import { DAY_SIZE, SummaryItem } from "../components/SummaryItem";
 import { Header } from "../components/Header";
 import { Loading } from "../components/Loading";
 
@@ -23,8 +23,8 @@ type Summary = {
 }[];
 
 export function Home() {
-  const [summary, setSummary] = useState<Summary>([]);
   const [loading, setLoading] = useState(true);
+  const [summary, setSummary] = useState<Summary>([]);
   const { navigate } = useNavigation();
 
   async function fetchData() {
@@ -40,9 +40,11 @@ export function Home() {
     }
   }
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchData();
+    }, [])
+  );
 
   if (loading) {
     return <Loading />;
@@ -77,12 +79,14 @@ export function Home() {
             });
 
             return (
-              <HabitDay
+              <SummaryItem
                 key={date.toISOString()}
                 date={date}
                 amountOfHabits={dayInSummary?.amount || 0}
                 amountCompleted={dayInSummary?.completed || 0}
-                onPress={() => navigate("habit", { date: date.toISOString() })}
+                onPress={() =>
+                  navigate("dayHabits", { date: date.toISOString() })
+                }
               />
             );
           })}
